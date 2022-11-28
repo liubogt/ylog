@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 )
@@ -89,8 +90,10 @@ func (l *YLogger) canLog(level LogLevel) bool {
 
 func (l *YLogger) log(level LogLevel, levelName string, v ...interface{}) {
 	if l.canLog(level) {
-		funcName, _, line, _ := runtime.Caller(2)
-		fullName := fmt.Sprintf("%s:%d", runtime.FuncForPC(funcName).Name(), line)
+		funcName, fileName, line, _ := runtime.Caller(2)
+		modIndex := strings.Index(runtime.FuncForPC(funcName).Name(), "/")
+		codeFile := fileName[modIndex:]
+		fullName := fmt.Sprintf("%s:%d", codeFile, line)
 		v = append([]interface{}{levelName, fullName, "-->"}, v...)
 		l.logger.Output(3, fmt.Sprintln(v...))
 	}

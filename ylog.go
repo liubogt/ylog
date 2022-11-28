@@ -99,7 +99,7 @@ func (l *YLogger) log(level LogLevel, levelName string, v ...interface{}) {
 // 日志包方法
 
 var logWriter = NewLogFileWriter("logs")
-var logger = NewYLogger(LevelInfo, io.MultiWriter(os.Stderr, logWriter))
+var logger = NewYLogger(LevelInfo, io.MultiWriter(os.Stdout, logWriter))
 
 func SetLevel(level LogLevel) {
 	logger.SetLevel(level)

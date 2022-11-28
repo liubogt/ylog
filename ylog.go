@@ -91,7 +91,7 @@ func (l *YLogger) log(level LogLevel, levelName string, v ...interface{}) {
 	if l.canLog(level) {
 		funcName, _, line, _ := runtime.Caller(2)
 		fullName := fmt.Sprintf("%s:%d", runtime.FuncForPC(funcName).Name(), line)
-		v = append([]interface{}{levelName, fullName, "--"}, v...)
+		v = append([]interface{}{levelName, fullName, "-->"}, v...)
 		l.logger.Output(3, fmt.Sprintln(v...))
 	}
 }

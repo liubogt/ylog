@@ -73,7 +73,7 @@ type YLogger struct {
 }
 
 func NewYLogger(level LogLevel, writer io.Writer) *YLogger {
-	logger := log.New(writer, "", log.Ldate|log.Lmicroseconds)
+	logger := log.New(writer, "", 0)
 	return &YLogger{
 		level:  level,
 		logger: logger,
@@ -90,11 +90,15 @@ func (l *YLogger) canLog(level LogLevel) bool {
 
 func (l *YLogger) log(level LogLevel, levelName string, v ...interface{}) {
 	if l.canLog(level) {
-		funcName, fileName, line, _ := runtime.Caller(2)
-		modIndex := strings.Index(runtime.FuncForPC(funcName).Name(), "/")
+		fn, fileName, line, _ := runtime.Caller(2)
+		funcName := runtime.FuncForPC(fn).Name()
+		packageIndex := strings.LastIndex(funcName, ".")
+		packageName := funcName[:packageIndex]
+		modIndex := strings.Index(fileName, packageName)
 		codeFile := fileName[modIndex:]
 		fullName := fmt.Sprintf("%s:%d", codeFile, line)
-		v = append([]interface{}{levelName, fullName, "-->"}, v...)
+		logTime := time.Now().Format("2006-01-02 15:03:04.000")
+		v = append([]interface{}{logTime, levelName, fullName, "-->"}, v...)
 		l.logger.Output(3, fmt.Sprintln(v...))
 	}
 }
